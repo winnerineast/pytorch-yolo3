@@ -1,5 +1,7 @@
 ### pytorch-yolo3
-Convert https://pjreddie.com/darknet/yolo/ into pytorch. Currently this repository works on python2 + pytorch 0.3.
+Convert https://pjreddie.com/darknet/yolo/ into pytorch. Currently this repository works on Python 3.6.1  + pytorch 0.3.1.post3
+
+This python3 version is merged from https://github.com/Swall0w/pytorch-yolo3
 
 Note: python3 is supported on python3 branch.
 ### Todos
