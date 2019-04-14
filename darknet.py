@@ -84,9 +84,8 @@ class Darknet(nn.Module):
 
         self.width = int(self.blocks[0]['width'])
         self.height = int(self.blocks[0]['height'])
-
+        print(self.blocks[(len(self.blocks)-1)]['type'])
         if self.blocks[(len(self.blocks)-1)]['type'] == 'region':
-            self.anchors = self.loss.anchors
             self.num_anchors = self.loss.num_anchors
             self.anchor_step = self.loss.anchor_step
             self.num_classes = self.loss.num_classes
