@@ -1,14 +1,7 @@
 ### pytorch-yolo3
-Convert https://pjreddie.com/darknet/yolo/ into pytorch. Currently this repository works on Python 3.6.1  + pytorch 0.3.1.post3
+Convert https://pjreddie.com/darknet/yolo/ into pytorch. Currently this repository works on Python 3.7.3  + pytorch 1.0.1.post2 on MacOS 10.14.
 
-This python3 version is merged from https://github.com/Swall0w/pytorch-yolo3
-
-Note: python3 is supported on python3 branch.
-### Todos
-- [x] make detect.py works
-
----
-#### Detection Using A Pre-Trained Model
+#### Detection Using A Pre-Trained Model with you webcam
 ```
 wget https://pjreddie.com/media/files/yolov3.weights
 python detect.py cfg/yolov3.cfg yolov3.weights data/dog.jpg
@@ -130,5 +123,4 @@ truck: 0.995232
 bicycle: 0.999972
 save plot results to predictions.jpg
 ```
-![predictions](data/predictions.jpg)
 
