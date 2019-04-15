@@ -2,8 +2,51 @@ import sys
 import time
 from PIL import Image, ImageDraw
 from models.tiny_yolo import TinyYoloNet
+import cv2
 from utils import *
 from darknet import Darknet
+
+
+def detect_camera(cfgfile, weightfile, imgfile):
+    m = Darknet(cfgfile)
+
+    m.print_network()
+    m.load_weights(weightfile)
+    print('Loading weights from %s... Done!' % (weightfile))
+
+    num_classes = 80
+    if num_classes == 20:
+        namesfile = 'data/voc.names'
+    elif num_classes == 80:
+        namesfile = 'data/coco.names'
+    else:
+        namesfile = 'data/names'
+
+    use_cuda = 0
+    if use_cuda:
+        m.cuda()
+
+    cap = cv2.VideoCapture(0)
+    while True:
+        ret, frame = cap.read()
+        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        sized = cv2.resize(img, (m.width, m.height))
+
+        for i in range(2):
+            start = time.time()
+            boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
+            finish = time.time()
+            if i == 1:
+                print('Predicted in %f seconds.' % (finish - start))
+
+        class_names = load_class_names(namesfile)
+        plot_boxes(frame, boxes, 'predictions.jpg', class_names)
+        cv2.imshow("Frame", gray)
+        if cv2.waitKey(1) & 0xff == ord('q'):
+            break
+    cv2.destroyAllWindow()
+
 
 def detect(cfgfile, weightfile, imgfile):
     m = Darknet(cfgfile)
@@ -52,7 +95,7 @@ def detect_cv2(cfgfile, weightfile, imgfile):
     else:
         namesfile = 'data/names'
     
-    use_cuda = 1
+    use_cuda = 0
     if use_cuda:
         m.cuda()
 
@@ -86,7 +129,7 @@ def detect_skimage(cfgfile, weightfile, imgfile):
     else:
         namesfile = 'data/names'
     
-    use_cuda = 1
+    use_cuda = 0
     if use_cuda:
         m.cuda()
 
@@ -104,14 +147,13 @@ def detect_skimage(cfgfile, weightfile, imgfile):
     plot_boxes_cv2(img, boxes, savename='predictions.jpg', class_names=class_names)
 
 
-
-
 if __name__ == '__main__':
     if len(sys.argv) == 4:
         cfgfile = sys.argv[1]
         weightfile = sys.argv[2]
         imgfile = sys.argv[3]
-        detect(cfgfile, weightfile, imgfile)
+        detect_camera(cfgfile, weightfile, imgfile)
+        #detect(cfgfile, weightfile, imgfile)
         #detect_cv2(cfgfile, weightfile, imgfile)
         #detect_skimage(cfgfile, weightfile, imgfile)
     else:
