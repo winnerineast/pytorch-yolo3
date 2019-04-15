@@ -3,6 +3,7 @@ import time
 from PIL import Image, ImageDraw
 from models.tiny_yolo import TinyYoloNet
 import cv2
+import numpy
 from utils import *
 from darknet import Darknet
 
@@ -29,9 +30,9 @@ def detect_camera(cfgfile, weightfile, imgfile):
     cap = cv2.VideoCapture(0)
     while True:
         ret, frame = cap.read()
-        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        sized = cv2.resize(img, (m.width, m.height))
+        cv_img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        pil_img = Image.fromarray(cv_img)
+        sized = pil_img.resize((m.width, m.height))
 
         for i in range(2):
             start = time.time()
@@ -41,8 +42,9 @@ def detect_camera(cfgfile, weightfile, imgfile):
                 print('Predicted in %f seconds.' % (finish - start))
 
         class_names = load_class_names(namesfile)
-        plot_boxes(frame, boxes, 'predictions.jpg', class_names)
-        cv2.imshow("Frame", gray)
+        pil_img = plot_boxes(pil_img, boxes, None, class_names)
+        img = cv2.cvtColor(numpy.asarray(pil_img), cv2.COLOR_RGB2BGR)
+        cv2.imshow("OpenCV",img)
         if cv2.waitKey(1) & 0xff == ord('q'):
             break
     cv2.destroyAllWindow()
@@ -80,6 +82,7 @@ def detect(cfgfile, weightfile, imgfile):
     class_names = load_class_names(namesfile)
     plot_boxes(img, boxes, 'predictions.jpg', class_names)
 
+
 def detect_cv2(cfgfile, weightfile, imgfile):
     import cv2
     m = Darknet(cfgfile)
@@ -112,6 +115,7 @@ def detect_cv2(cfgfile, weightfile, imgfile):
 
     class_names = load_class_names(namesfile)
     plot_boxes_cv2(img, boxes, savename='predictions.jpg', class_names=class_names)
+
 
 def detect_skimage(cfgfile, weightfile, imgfile):
     from skimage import io
